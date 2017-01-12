@@ -69,11 +69,20 @@ class RobotController:
       scan = self.laser_aggregation.laser_scan
       linear  = 0
       angular = 0
+      threshold_scan = 0.4
       ############################### NOTE QUESTION ############################
       # Check what laser_scan contains and create linear and angular speeds
       # for obstacle avoidance
-
+      if min(scan) < threshold_scan:
+        linear = 0
+        angular = 0.3
+        print "Obstactle found!"
+      else:
+        linear = 0.3
+        angular = 0
+        print "Go ahead"
       ##########################################################################
+      
       return [linear, angular]
 
     # Combines the speeds into one output using a motor schema approach
@@ -111,6 +120,8 @@ class RobotController:
 
         ##########################################################################
       else:
+        self.linear_velocity  = l_laser
+        self.angular_velocity = a_laser
         ############################### NOTE QUESTION ############################
         # Implement obstacle avoidance here using the laser speeds.
         # Hint: Subtract them from something constant
