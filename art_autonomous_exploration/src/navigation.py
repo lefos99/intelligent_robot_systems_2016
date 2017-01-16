@@ -285,9 +285,7 @@ class Navigation:
             degree_threshold = 10
             print "The phi is " , phi
             print "The yaw is " , yaw
-            orientation = self.returnSignOfNumber(phi-yaw)
-            if abs(yaw-phi) > 180:
-                orientation = -1 * orientation
+            orientation = (1-2*(abs(yaw-phi) > 180)) * self.returnSignOfNumber(phi-yaw)
             print "The orientation is " , orientation
             
             if abs(yaw - phi) < 5 :
