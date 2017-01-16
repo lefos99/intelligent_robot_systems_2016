@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
-from __future__ import division #added by us
+from __future__ import division  #added by us
+import numpy as np  #added by us
 import rospy
 import math
 import time
@@ -77,12 +78,8 @@ class RobotController:
       nearest_scan = scan.index(min(scan))
       # angular speed tries to avoid the nearest object and its magnitude
       # depends both on the nearest and the furthest scan
-      angular = self.returnSignOfNumber(L/2 - nearest_scan) * 0.6/(max(scan)*min(scan))
-      
-      # maximum angular speed 0.3 r/s
-      if abs(angular) > 0.3:
-        angular = 0.3 * np.sign(angular)
-        
+      angular = np.sign(L/2 - nearest_scan) * 0.6/(max(scan)*min(scan))
+              
       # linear speed is maximum when there is no object in radius of 1m
       # otherwise the closer the object is, the lower the speed becomes 
       linear = 0.2 * min(scan) * (min(scan)< 1) + 0.3 * (min(scan)>=1)
@@ -128,8 +125,14 @@ class RobotController:
         ############################### NOTE QUESTION ############################
         # You must combine the two sets of speeds. You can use motor schema,
         # subsumption of whatever suits your better.
-        self.linear_velocity  = l_goal
-        self.angular_velocity = a_goal
+        scan = self.laser_aggregation.laser_scan
+        if min(scan) < 0.5:
+          self.linear_velocity = 0.30 * l_goal + 0.70 * l_laser
+          self.angular_velocity = 0.30 * a_goal + 0.70 * a_laser
+          print "Avoid the obstactles is on with distance ", min(scan), "!!!\n"
+        else:
+          self.linear_velocity = 0.90 * l_goal + 0.10 * l_laser
+          self.angular_velocity = 0.90 * a_goal + 0.10 * a_laser
         ##########################################################################
       else:
         self.linear_velocity  = l_laser
@@ -139,7 +142,17 @@ class RobotController:
         # Hint: Subtract them from something constant
         pass
         ##########################################################################
-
+        
+      # maximum angular speed 0.3 r/s
+      if abs(self.angular_velocity) > 0.3:
+        self.angular_velocity = 0.3 * np.sign(self.angular_velocity)
+        
+      if abs(self.linear_velocity) > 0.3:
+        self.linear_velocity = 0.3 * np.sign(self.linear_velocity)
+      
+      print "The linear velocity is ",self.linear_velocity
+      print "The angular velocity is ",self.angular_velocity , "\n"
+    
     # Assistive functions
     def stopRobot(self):
       self.stop_robot = True
@@ -147,8 +160,4 @@ class RobotController:
     def resumeRobot(self):
       self.stop_robot = False
       
-    def returnSignOfNumber(self, number):
-      if(number < -1):
-          return -1
-      else:
-          return 1 
+    
