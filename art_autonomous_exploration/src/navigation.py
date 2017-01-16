@@ -283,10 +283,7 @@ class Navigation:
             phi = self.rect_to_polar_input(st_y-ry+0.00001,st_x-rx+0.00001)
             yaw = theta * (180/np.pi) + (theta < 0) * 360
             degree_threshold = 10
-            print "The phi is " , phi
-            print "The yaw is " , yaw
-            orientation = (1-2*(abs(yaw-phi) > 180)) * self.returnSignOfNumber(phi-yaw)
-            print "The orientation is " , orientation
+            orientation = (1-2*(abs(yaw-phi) > 180)) * np.sign(phi-yaw)
             
             if abs(yaw - phi) < 5 :
                 linear = 0.3
@@ -297,12 +294,6 @@ class Navigation:
                 linear = 0
         return [linear, angular]
         
-    def returnSignOfNumber(self, number):
-        if(number < -1):
-            return -1
-        else:
-            return 1   
-    
     def rect_to_polar_input(self, y, x):
         angle = round(math.degrees(math.atan2(y, x)))
         if angle < 0:
