@@ -99,12 +99,32 @@ class Navigation:
         # What if a later subtarget or the end has been reached before the 
         # next subtarget? Alter the code accordingly.
         # Check if distance is less than 7 px (14 cm)
+        
+        # Routine has been modified so that if a later sub-target ha been reached
+        # the robot will continue from there or stop if final target is reached
+        # This routine does only checking for target not path replanning
+        
         if dist < 5:
           self.next_subtarget += 1
           self.counter_to_next_sub = self.count_limit
           # Check if the final subtarget has been approached
           if self.next_subtarget == len(self.subtargets):
             self.target_exists = False
+        print "Next target: %d" % self.next_subtarget 
+        print len(self.subtargets)
+        
+        for i in range(len(self.subtargets)-1,self.next_subtarget-1,-1):
+            dist = math.hypot(\
+                rx - self.subtargets[i][0], \
+                ry - self.subtargets[i][1])
+            print i
+            if dist < 5:
+                self.next_subtarget = i
+                self.counter_to_next_sub = self.count_limit
+                if self.next_subtarget == len(self.subtargets):
+                    self.target_exists = False
+
+        
         ########################################################################
         
         # Publish the current target
@@ -283,10 +303,10 @@ class Navigation:
             phi = self.rect_to_polar_input(st_y-ry+0.00001,st_x-rx+0.00001)
             yaw = theta * (180/np.pi) + (theta < 0) * 360
             degree_threshold = 10
-            print "The phi is " , phi
-            print "The yaw is " , yaw
+            #print "The phi is " , phi
+            #print "The yaw is " , yaw
             orientation = (1-2*(abs(yaw-phi) > 180)) * self.returnSignOfNumber(phi-yaw)
-            print "The orientation is " , orientation
+            #print "The orientation is " , orientation
             
             if abs(yaw - phi) < 5 :
                 linear = 0.3
