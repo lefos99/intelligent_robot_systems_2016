@@ -229,7 +229,7 @@ class Navigation:
           # You must understand what self.robot_perception.resolution
           # and self.robot_perception.origin are.
           ps.pose.position.x = p[0] * self.robot_perception.resolution + self.robot_perception.origin['x']
-          ps.pose.position.y = p[1] * self.robot_perception.resolution + self.robot_perception.origin['y']        
+          ps.pose.position.y = p[1] * self.robot_perception.resolution + self.robot_perception.origin['y']    
           ########################################################################
           ros_path.poses.append(ps)
         self.path_publisher.publish(ros_path)
@@ -280,7 +280,33 @@ class Navigation:
             st_y = self.subtargets[self.next_subtarget][1]
             
         ######################### NOTE: QUESTION  ##############################
-
+            phi = self.rect_to_polar_input(st_y-ry+0.00001,st_x-rx+0.00001)
+            yaw = theta * (180/np.pi) + (theta < 0) * 360
+            degree_threshold = 10
+            print "The phi is " , phi
+            print "The yaw is " , yaw
+            orientation = self.returnSignOfNumber(phi-yaw)
+            if abs(yaw-phi) > 180:
+                orientation = -1 * orientation
+            print "The orientation is " , orientation
+            
+            if abs(yaw - phi) < 5 :
+                linear = 0.3
+            else:
+                angular = ((abs(yaw - phi)> degree_threshold) \
+                    + (abs(yaw - phi)< degree_threshold) * (abs(yaw - phi))/degree_threshold) \
+                    * 0.3 * orientation
+                linear = 0
         return [linear, angular]
-
+        
+    def returnSignOfNumber(self, number):
+        if(number < -1):
+            return -1
+        else:
+            return 1   
     
+    def rect_to_polar_input(self, y, x):
+        angle = round(math.degrees(math.atan2(y, x)))
+        if angle < 0:
+            angle += 360
+        return angle
