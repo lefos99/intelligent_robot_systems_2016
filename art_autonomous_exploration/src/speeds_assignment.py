@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+from __future__ import division #added by us
 import rospy
 import math
 import time
@@ -67,21 +68,30 @@ class RobotController:
     # Produces speeds from the laser
     def produceSpeedsLaser(self):
       scan = self.laser_aggregation.laser_scan
-      linear  = 0
-      angular = 0
       threshold_scan = 0.5
       L = len(scan)
       ############################### NOTE QUESTION ############################
       # Check what laser_scan contains and create linear and angular speeds
       # for obstacle avoidance
-      if min(scan) < threshold_scan:
-        linear = 0
-        angular = 0.3
-        print "Obstactle found!"
-      else:
-        linear = 0.3
-        angular = 0 #0.2*(-L/2  + scan.index(max(scan)))/(L/2)
-        print "Go ahead"
+      furthest_scan = scan.index(max(scan))
+      nearest_scan = scan.index(min(scan))
+      # angular speed tries to avoid the nearest object and its magnitude
+      # depends both on the nearest and the furthest scan
+      angular = self.returnSignOfNumber(L/2 - nearest_scan) * 0.6/(max(scan)*min(scan))
+      
+      # maximum angular speed 0.3 r/s
+      if abs(angular) > 0.3:
+        angular = 0.3 * np.sign(angular)
+        
+      # linear speed is maximum when there is no object in radius of 1m
+      # otherwise the closer the object is, the lower the speed becomes 
+      linear = 0.2 * min(scan) * (min(scan)< 1) + 0.3 * (min(scan)>=1)
+      
+      #~ print "The furthest scan is", max(scan)
+      #~ print "The nearest scan is", min(scan)
+      #~ print "The linear speed is", linear
+      #~ print "The angular speed is", angular
+      #~ print "\n"
       ##########################################################################
       
       return [linear, angular]
@@ -118,7 +128,8 @@ class RobotController:
         ############################### NOTE QUESTION ############################
         # You must combine the two sets of speeds. You can use motor schema,
         # subsumption of whatever suits your better.
-
+        self.linear_velocity  = l_goal
+        self.angular_velocity = a_goal
         ##########################################################################
       else:
         self.linear_velocity  = l_laser
@@ -135,3 +146,9 @@ class RobotController:
 
     def resumeRobot(self):
       self.stop_robot = False
+      
+    def returnSignOfNumber(self, number):
+      if(number < -1):
+          return -1
+      else:
+          return 1 
