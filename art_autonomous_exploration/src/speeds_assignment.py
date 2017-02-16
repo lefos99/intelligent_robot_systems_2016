@@ -76,6 +76,7 @@ class RobotController:
       # for obstacle avoidance
       furthest_scan = scan.index(max(scan))
       nearest_scan = scan.index(min(scan))
+      
       # angular speed tries to avoid the nearest object and its magnitude
       # depends both on the nearest and the furthest scan
       angular = np.sign(L/2 - nearest_scan) * 0.6/(max(scan)*min(scan))
@@ -84,11 +85,6 @@ class RobotController:
       # otherwise the closer the object is, the lower the speed becomes 
       linear = 0.2 * min(scan) * (min(scan)< 1) + 0.3 * (min(scan)>=1)
       
-      #~ print "The furthest scan is", max(scan)
-      #~ print "The nearest scan is", min(scan)
-      #~ print "The linear speed is", linear
-      #~ print "The angular speed is", angular
-      #~ print "\n"
       ##########################################################################
       
       return [linear, angular]
@@ -126,10 +122,11 @@ class RobotController:
         # You must combine the two sets of speeds. You can use motor schema,
         # subsumption of whatever suits your better.
         scan = self.laser_aggregation.laser_scan
-        if min(scan) < 0.5:
+        check_obst = min(scan[113:534])
+        if check_obst < 0.3: # you do not need the whole scan - just 60%
           self.linear_velocity = 0.30 * l_goal + 0.70 * l_laser
           self.angular_velocity = 0.30 * a_goal + 0.70 * a_laser
-          print "Avoid the obstactles is on with distance ", min(scan), "!!!\n"
+          print "Avoid the obstactles is on with distance ", check_obst, "!!!\n"
         else:
           self.linear_velocity = 0.90 * l_goal + 0.10 * l_laser
           self.angular_velocity = 0.90 * a_goal + 0.10 * a_laser
