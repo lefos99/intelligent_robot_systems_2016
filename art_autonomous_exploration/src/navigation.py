@@ -201,7 +201,8 @@ class Navigation:
                     local_coverage,\
                     self.robot_perception.robot_pose,
                     self.robot_perception.origin,
-                    self.robot_perception.resolution, 
+                    self.robot_perception.resolution,
+                    g_robot_pose, # We need this for path planning
                     force_random)
           
           self.path = self.path_planning.createPath(\
