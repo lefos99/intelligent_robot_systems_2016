@@ -121,9 +121,11 @@ class RobotController:
         ############################### NOTE QUESTION ############################
         # You must combine the two sets of speeds. You can use motor schema,
         # subsumption of whatever suits your better.
+        
         scan = self.laser_aggregation.laser_scan
-        check_obst = min(scan[113:534])
-        if check_obst < 0.3: # you do not need the whole scan - just 60%
+        # you do not need the whole scan - just 60%
+        check_obst = min(scan[113:534]) 
+        if check_obst < 0.3:
           self.linear_velocity = 0.30 * l_goal + 0.70 * l_laser
           self.angular_velocity = 0.30 * a_goal + 0.70 * a_laser
           print "Avoid the obstactles is on with distance ", check_obst, "!!!\n"
@@ -144,6 +146,7 @@ class RobotController:
       if abs(self.angular_velocity) > 0.3:
         self.angular_velocity = 0.3 * np.sign(self.angular_velocity)
         
+      # maximum linear speed 0.3 m/s
       if abs(self.linear_velocity) > 0.3:
         self.linear_velocity = 0.3 * np.sign(self.linear_velocity)
       
