@@ -125,7 +125,7 @@ class RobotController:
         scan = self.laser_aggregation.laser_scan
         # you do not need the whole scan - just 60%
         check_obst = min(scan[113:534]) 
-        if check_obst < 0.3:
+        if check_obst < 0.37:
           self.linear_velocity = 0.30 * l_goal + 0.70 * l_laser
           self.angular_velocity = 0.30 * a_goal + 0.70 * a_laser
           print "Avoid the obstactles is on with distance ", check_obst, "!!!\n"
