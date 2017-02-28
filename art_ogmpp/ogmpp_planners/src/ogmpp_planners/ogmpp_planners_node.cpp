@@ -1,4 +1,5 @@
 #include "ogmpp_planners/ogmpp_planners_node.hpp"
+#include <inttypes.h>
 
 namespace ogmpp_planners
 {
@@ -10,7 +11,28 @@ namespace ogmpp_planners
 
     _path_publisher = _nh.advertise<nav_msgs::Path>(
       "/ogmpp_path_planners/path", 10);
+    
+    _coverage_subscriber = _nh.subscribe("/as/robot/coverage", 10, &OgmppPlanners::coverageCallback, this);
+    
+    coverage_height = 0;
+    coverage_width = 0;
+    coverage_resolution = 0;
+    coverage_data.clear();
+  }
 
+  void OgmppPlanners::coverageCallback(nav_msgs::OccupancyGrid msg)
+  {
+      coverage_height = msg.info.height;
+      coverage_width = msg.info.width;
+      coverage_resolution = msg.info.resolution;
+      coverage_data.clear();
+      for ( int i = 0; i < coverage_width; i++ ) {
+        for ( int j = 0; j < coverage_height; j++ )
+        {
+         //~ printf("%" PRIu16,msg.data[j+i*coverage_width]);
+         coverage_data.push_back((int) msg.data[i + j * coverage_height]);
+        }
+      }
   }
 
   bool OgmppPlanners::planCallback(
@@ -65,7 +87,7 @@ namespace ogmpp_planners
           req.parameters[i], req.values[i]) );
     }
 
-    p = planner->createPath(_map, begin, end, parameters);
+    p = planner->createPath(_map, begin, end, parameters, coverage_data, coverage_width, coverage_height);
 
     delete planner;
 

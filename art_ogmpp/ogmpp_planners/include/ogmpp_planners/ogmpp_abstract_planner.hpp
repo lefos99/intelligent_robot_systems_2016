@@ -50,7 +50,8 @@ namespace ogmpp_planners
       virtual std::vector<ogmpp_graph::Cell> _fixPath(
         ogmpp_graph::Graph& g,
         ogmpp_graph::Cell begin,
-        ogmpp_graph::Cell end);
+        ogmpp_graph::Cell end,
+        std::vector<int> coverage_data, int width, int height);
 
       /**
        * @brief Visualizes the graph and the path
@@ -79,7 +80,8 @@ namespace ogmpp_planners
           ogmpp_map_loader::Map &map, 
           ogmpp_graph::Cell begin, 
           ogmpp_graph::Cell end,
-          std::map<std::string, double> parameters);
+          std::map<std::string, double> parameters,
+          std::vector<int> coverage_data, int width, int height);
   };
 
 }

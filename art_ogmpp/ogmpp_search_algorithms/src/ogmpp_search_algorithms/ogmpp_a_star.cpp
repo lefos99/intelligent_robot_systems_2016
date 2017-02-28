@@ -11,7 +11,8 @@ namespace ogmpp_search_algorithms
   std::vector<ogmpp_graph::Cell> AStar::search(
     ogmpp_graph::Graph &g,
     ogmpp_graph::Cell start,
-    ogmpp_graph::Cell end)
+    ogmpp_graph::Cell end,
+    std::vector<int> coverage_data, int width, int height)
   {
 
     // Typedefs for iterators to ease our lives
@@ -99,8 +100,12 @@ namespace ogmpp_search_algorithms
           continue;
 
         // Check the length of this path
+        //~ float tentative_g_score = g_score[current] +
+          //~ current->getPose().distanceFrom(neighbor->getPose());
+          
+        // Check the coverage of this path
         float tentative_g_score = g_score[current] +
-          current->getPose().distanceFrom(neighbor->getPose());
+          coverage_data[current->getPose().x+current->getPose().y * height];
 
         // Check if we have a new node
         if( open_set.find(neighbor) == open_set.end() )

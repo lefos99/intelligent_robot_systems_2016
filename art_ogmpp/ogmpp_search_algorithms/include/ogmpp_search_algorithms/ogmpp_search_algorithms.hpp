@@ -15,7 +15,8 @@ namespace ogmpp_search_algorithms
       static std::vector<ogmpp_graph::Cell> aStarSearch(
         ogmpp_graph::Graph &g,
         ogmpp_graph::Cell start,
-        ogmpp_graph::Cell end);
+        ogmpp_graph::Cell end,
+        std::vector<int> coverage_data, int width, int height);
   };
 }
 

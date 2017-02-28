@@ -9,6 +9,7 @@
 #include "ogmpp_metrics/ogmpp_metrics_node.hpp"
 
 #include "nav_msgs/Path.h"
+#include "nav_msgs/OccupancyGrid.h"
 
 /**< The generic ogmpp planners namespace */
 namespace ogmpp_planners
@@ -16,12 +17,19 @@ namespace ogmpp_planners
   class OgmppPlanners
   {
     private:
+    
+      std::vector<int> coverage_data;
+      int coverage_height;
+      int coverage_width;
+      float coverage_resolution;
       
       ros::NodeHandle _nh;
 
       ros::ServiceServer _server_path_planning;
 
       ros::Publisher _path_publisher;
+      
+      ros::Subscriber _coverage_subscriber;
 
       /**< Holds the map of the environment */
       ogmpp_map_loader::Map _map;
@@ -31,7 +39,9 @@ namespace ogmpp_planners
       bool planCallback(
         ogmpp_communications::OgmppPathPlanningSrv::Request& req,
         ogmpp_communications::OgmppPathPlanningSrv::Response& res);
-
+      
+      void coverageCallback(nav_msgs::OccupancyGrid msg);
+      
     public:
       OgmppPlanners(void);
   };
