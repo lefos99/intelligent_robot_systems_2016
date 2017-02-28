@@ -104,7 +104,8 @@ namespace ogmpp_search_algorithms
           //~ current->getPose().distanceFrom(neighbor->getPose());
           
         // Check the coverage of this path
-        float tentative_g_score = g_score[current] +
+        int big_weight = 1000000;
+        float tentative_g_score = g_score[current] + big_weight * 
           coverage_data[current->getPose().x+current->getPose().y * height];
 
         // Check if we have a new node
